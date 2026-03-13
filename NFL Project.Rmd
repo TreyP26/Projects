@@ -1,0 +1,192 @@
+---
+title: "CMDA 3274 NFL Project"
+author: "Trey Potter, Drew Keely, Leo Annet, and Rajiul Tandon"
+date: "2025-12-02"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(glmnet)
+library(broom)
+library(ggplot2)
+library(ggrepel)
+library(corrplot)
+library(scales)
+library(nflreadr)
+
+set.seed(123) #for replicability
+n_sims <- 10000 #number of simulations                      
+alpha_grid <- seq(0, 1, by = 0.1)   
+max_missing_frac <- 0.20            
+high_corr_cutoff <- 0.90            
+
+# ---- Data Source ----
+# nfl_team_summary.csv was created using publicly available NFL data
+# from nflreadr (https://nflreadr.com/) and nflfastR data repositories.
+df <- read.csv("C:/Users/treya/Desktop/nfl_team_summary.csv", stringsAsFactors = FALSE)
+```
+
+#Preparing The Data
+```{r}
+#add 
+df <- df %>%
+  mutate(
+    games = as.numeric(games),
+    wins  = as.numeric(wins),
+    win_pct = wins / games,
+    turnover_diff = if (all(c("turnovers_forced","turnovers") %in% names(.))) turnovers_forced - turnovers else NA_real_,
+    point_diff_per_game = if ("point_diff" %in% names(.)) point_diff / games else NA_real_
+  ) %>%
+  filter(!is.na(win_pct))
+
+train <- df %>% filter(season < 2024)
+test_2024 <- df %>% filter(season == 2024)
+
+candidate_preds <- c(
+  "avg_epa", "success_rate",
+  "turnovers", "turnovers_forced", "turnover_diff",
+  "def_avg_epa_allowed", "def_success_rate_allowed",
+  "yards_per_play", "yards_allowed_per_play",
+  "point_diff_per_game"
+)
+candidate_preds <- intersect(candidate_preds, names(train))
+
+# Drop predictors with too many missing values
+na_frac <- sapply(train %>% select(all_of(candidate_preds)), function(x) mean(is.na(x)))
+candidate_preds <- names(na_frac[na_frac <= max_missing_frac])
+
+# Quick high-correlation reporting
+if(length(candidate_preds) >= 2) {
+  corr_tmp <- train %>% select(all_of(candidate_preds)) %>% mutate(across(everything(), as.numeric))
+  corr_tmp <- cor(corr_tmp, use = "pairwise.complete.obs")
+  high_pairs <- which(abs(corr_tmp) > high_corr_cutoff & abs(corr_tmp) < 1, arr.ind = TRUE)
+  if(nrow(high_pairs) > 0) {
+    pairs_list <- apply(high_pairs, 1, function(r) paste(rownames(corr_tmp)[r[1]], colnames(corr_tmp)[r[2]], sep = " - "))
+  }
+}
+
+```
+
+
+# Correlation Heat Map
+```{r}
+if(length(candidate_preds) >= 2) {
+  num_train <- train %>% select(all_of(candidate_preds)) %>% mutate(across(everything(), as.numeric))
+  corrm <- cor(num_train, use = "pairwise.complete.obs")
+  corrplot(corrm, method = "color", type = "upper", tl.cex = 0.8, tl.col = "black",
+           title = "Train Feature Correlations (2015-2023)", mar = c(0,0,2,0))
+}
+
+```
+
+
+#Offense vs Defense EPA
+```{r}
+ggplot(df, aes(x = avg_epa, y = def_avg_epa_allowed)) +
+  geom_point(aes(size = point_diff, color = point_diff)) +
+  scale_color_gradient2(
+    low = "#E53935",
+    mid = "gray80",
+    high = "#43A047",
+    name = "Point Diff"
+  ) +
+  scale_size(range = c(2, 8), guide = "none") + 
+  labs(
+    title = "Offense vs Defense EPA",
+    x = "Offensive EPA (Efficiency)",
+    y = "Defensive EPA Allowed"
+  ) +
+  theme_minimal()
+df$label_play <- ifelse(
+  df$team %in% (
+    df %>% arrange(desc(pass_rate)) %>% head(5) %>% pull(team)
+  ) |
+    df$team %in% (
+      df %>% arrange(pass_rate) %>% head(5) %>% pull(team)
+    ),
+  df$team,
+  ""
+)
+```
+
+
+#Model Matricies 
+```{r}
+train_x <- model.matrix(~ . -1, data = train %>% select(all_of(candidate_preds)))
+test_x  <- model.matrix(~ . -1, data = test_2024 %>% select(all_of(candidate_preds)))
+common_cols <- intersect(colnames(train_x), colnames(test_x))
+train_x <- train_x[, common_cols, drop = FALSE]
+test_x  <- test_x[, common_cols, drop = FALSE]
+y_train <- train$wins
+```
+
+
+#Elastic-Net Alpha Search 
+```{r}
+cv_results <- list()
+for(a in alpha_grid) {
+  set.seed(123)
+  cv <- cv.glmnet(train_x, y_train, alpha = a, nfolds = 10, family = "gaussian")
+  cv_results[[as.character(a)]] <- list(cv = cv, cvm_min = min(cv$cvm))
+}
+best_alpha <- as.numeric(names(which.min(sapply(cv_results, function(x) x$cvm_min))))
+best_cv <- cv_results[[as.character(best_alpha)]]$cv
+
+# Extract coefficients
+coef_mat <- as.matrix(coef(best_cv, s = "lambda.min"))
+coef_df <- tibble(term = rownames(coef_mat), estimate = as.numeric(coef_mat[,1])) %>%
+  arrange(desc(abs(estimate)))
+```
+
+
+#Importance of Variables
+```{r}
+coef_plot_df <- coef_df %>% filter(term != "(Intercept)" & estimate != 0)
+p_varimp <- ggplot(coef_plot_df, aes(x = abs(estimate), y = reorder(term, abs(estimate)))) +
+  geom_col() +
+  labs(title = "Regularized Coefficients (abs) - Elastic-net", x = "Abs(coef)", y = "") +
+  theme_minimal()
+print(p_varimp)
+```
+
+
+#Predict Expected Wins
+```{r}
+train$pred_wins_raw <- as.numeric(predict(best_cv, newx = train_x, s = "lambda.min"))
+test_2024$pred_wins_raw <- as.numeric(predict(best_cv, newx = test_x, s = "lambda.min"))
+
+calib_df <- train %>% mutate(pred_wins_raw = pred_wins_raw)
+calibration <- glm(cbind(wins, games - wins) ~ pred_wins_raw, data = calib_df, family = binomial())
+prob_pred <- predict(calibration, newdata = data.frame(pred_wins_raw = test_2024$pred_wins_raw), type = "response")
+test_2024$game_win_prob <- pmax(pmin(prob_pred, 0.995), 0.005)
+test_2024$expected_wins <- test_2024$game_win_prob * test_2024$games
+test_2024$coaching_diff <- test_2024$wins - test_2024$expected_wins
+```
+
+#Evaluation On 2024 Season
+```{r}
+mae  <- mean(abs(test_2024$wins - test_2024$expected_wins), na.rm = TRUE)
+rmse <- sqrt(mean((test_2024$wins - test_2024$expected_wins)^2, na.rm = TRUE))
+r2   <- cor(test_2024$wins, test_2024$expected_wins, use = "complete.obs")^2
+```
+
+
+#Expected vs Actual Wins
+```{r}
+p_exp_act <- ggplot(test_2024, aes(x = expected_wins, y = wins)) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray") +
+  geom_point(size = 3) +
+  geom_text_repel(aes(label = team), size = 3, max.overlaps = 20) +
+  labs(title = "2024 Expected vs Actual Wins", x = "Expected Wins", y = "Actual Wins") +
+  theme_minimal()
+print(p_exp_act)
+
+cat("2024 performance:\n")
+cat(sprintf("MAE: %.3f\nRMSE: %.3f\nRB2: %.3f\n", mae, rmse, r2))
+```
+
