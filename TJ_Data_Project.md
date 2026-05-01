@@ -106,17 +106,17 @@ This analysis focuses on identifying associations, not causal relationships, bet
 - Tommy John surgery was treated as a static outcome rather than a time-to-event process.
 
 ## Results 
-<img width="1000" height="615" alt="Off-Speed_TJ_Velo" src="https://github.com/user-attachments/assets/6072392f-7010-4bb0-bb91-1e6b20599d28" />  
+<img width="1000" height="615" alt="Off-Speed_TJ_Velo" src="https://github.com/user-attachments/assets/6072392f-7010-4bb0-bb91-1e6b20599d28" />    
 
-<img width="1000" height="615" alt="Breaking_Ball_TJ_Velo" src="https://github.com/user-attachments/assets/0d64e05b-7865-4189-af14-67dd135b4212" />
+<img width="1000" height="615" alt="Breaking_Ball_TJ_Velo" src="https://github.com/user-attachments/assets/0d64e05b-7865-4189-af14-67dd135b4212" />  
 
-<img width="1000" height="615" alt="Fastball_TJ_Velo" src="https://github.com/user-attachments/assets/2d1badd0-626c-47a5-bbfd-e5c3f23a3429" />
+<img width="1000" height="615" alt="Fastball_TJ_Velo" src="https://github.com/user-attachments/assets/2d1badd0-626c-47a5-bbfd-e5c3f23a3429" />  
 
-<img width="1000" height="615" alt="Off-Speed_TJ_Spin" src="https://github.com/user-attachments/assets/c166a74f-e702-4534-ae2d-5165b54d8bcc" />
+<img width="1000" height="615" alt="Off-Speed_TJ_Spin" src="https://github.com/user-attachments/assets/c166a74f-e702-4534-ae2d-5165b54d8bcc" />  
 
-<img width="1000" height="615" alt="Breaking_Ball_TJ_Spin" src="https://github.com/user-attachments/assets/4a40e296-ffe1-4245-a1c7-ff924b571320" />
+<img width="1000" height="615" alt="Breaking_Ball_TJ_Spin" src="https://github.com/user-attachments/assets/4a40e296-ffe1-4245-a1c7-ff924b571320" />  
 
-<img width="1000" height="615" alt="Fastball_TJ_Spin" src="https://github.com/user-attachments/assets/4c131a4f-a1b1-44d7-b6c5-5544881aa08f" />
+<img width="1000" height="615" alt="Fastball_TJ_Spin" src="https://github.com/user-attachments/assets/4c131a4f-a1b1-44d7-b6c5-5544881aa08f" />  
 
-<img width="1000" height="615" alt="Pitches_TJ" src="https://github.com/user-attachments/assets/59f819af-2075-484e-9961-fc1c38884345" />
+<img width="1000" height="615" alt="Pitches_TJ" src="https://github.com/user-attachments/assets/59f819af-2075-484e-9961-fc1c38884345" />  
 
