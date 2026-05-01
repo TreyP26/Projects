@@ -26,20 +26,21 @@ R²: 0.84
 
 The model explains roughly 84% of the variation in team wins, with average prediction error just over one win. The most influential predictors were:
 
-Offensive success rate
-Defensive success rate
-Point differential per game
-Turnover differential
+<img width="766" height="533" alt="FI_NFL_Model" src="https://github.com/user-attachments/assets/24bcd6f8-db10-4500-a6a4-b7fb9d1505b9" />
+
 
 Most teams were predicted accurately, with a few notable outliers driven by close game variance and situational factors.
 
 ## Key Takeaways
 Team efficiency metrics are strongly associated with NFL success.
-Offensive and defensive consistency matter more than playcalling tendencies alone.
+Offensive and defensive consistency matters more than playcalling tendencies alone.
 Even strong models cannot fully account for randomness, injuries, coaching decisions, and game to game variance.
-The model is descriptive rather than predictive, relying on in-season performance rather than forecasting future seasons.
 
 ## Limitations & Future Work
 No true preseason or forward-looking predictive power
 Does not explicitly model injuries, weather, or coaching decisions
 Future extensions could include game-level modeling, Bayesian approaches, or incorporating roster and injury data
+
+
+# Tommy John Project Overview
+
