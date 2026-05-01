@@ -120,3 +120,22 @@ This analysis focuses on identifying associations, not causal relationships, bet
 
 <img width="1000" height="615" alt="Pitches_TJ" src="https://github.com/user-attachments/assets/59f819af-2075-484e-9961-fc1c38884345" />  
 
+The strongest observed correlation between Tommy John surgery and any pitch characteristic was 0.308, with all other velocity and spin rate variables showing weaker positive correlations. The number of pitches thrown exhibited essentially no relationship with Tommy John surgery (correlation ≈ –0.01).
+
+While these correlations are positive, their magnitudes are relatively modest. A correlation of 0.308 implies that less than 10% of the variance in Tommy John surgery status can be explained by the strongest individual predictor (since R^2≈0.095). This indicates that pitch velocity and spin rate alone are insufficient to meaningfully distinguish pitchers who undergo Tommy John surgery from those who do not.
+
+## Practical vs. Statistical Significance
+
+Although small correlations may reach statistical significance in large datasets, they do not necessarily imply practical importance. In this context, the observed relationships are too weak to support strong conclusions about injury risk based solely on pitch characteristics. The results suggest that while higher velocity and spin may be associated with Tommy John surgery, they are unlikely to be primary drivers of injury on their own.
+
+## Implications
+
+These findings reinforce the idea that Tommy John surgery is a multifactorial outcome, influenced by factors not captured in this analysis, such as:
+
+- Pitcher biomechanics
+- Cumulative workload and fatigue
+- Recovery time and usage patterns
+- Prior injury history
+- Mechanical stress specific to individual pitchers
+
+As a result, pitch velocity and spin rate should not be interpreted as reliable standalone indicators of Tommy John injury risk.
