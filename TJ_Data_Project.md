@@ -122,7 +122,7 @@ This analysis focuses on identifying associations, not causal relationships, bet
 
 The strongest observed correlation between Tommy John surgery and any pitch characteristic was 0.308, with all other velocity and spin rate variables showing weaker positive correlations. The number of pitches thrown exhibited essentially no relationship with Tommy John surgery (correlation ≈ –0.01).
 
-While these correlations are positive, their magnitudes are relatively modest. A correlation of 0.308 implies that less than 10% of the variance in Tommy John surgery status can be explained by the strongest individual predictor (since R^2≈0.095). This indicates that pitch velocity and spin rate alone are insufficient to meaningfully distinguish pitchers who undergo Tommy John surgery from those who do not.
+While these correlations are positive, their magnitudes are relatively modest. A correlation of 0.308 implies that less than 10% of the variance in Tommy John surgery status can be explained by the strongest individual predictor (since R²≈0.095). This indicates that pitch velocity and spin rate alone are insufficient to meaningfully distinguish pitchers who undergo Tommy John surgery from those who do not.
 
 ## Practical vs. Statistical Significance
 
