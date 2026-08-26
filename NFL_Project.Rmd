@@ -28,7 +28,7 @@ high_corr_cutoff <- 0.90
 # ---- Data Source ----
 # nfl_team_summary.csv was created using publicly available NFL data
 # from nflreadr (https://nflreadr.com/) and nflfastR data repositories.
-df <- read.csv("C:/Users/treya/Desktop/nfl_team_summary.csv", stringsAsFactors = FALSE)
+df <- read.csv("nfl_team_summary.csv", stringsAsFactors = FALSE)
 ```
 
 #Preparing The Data
